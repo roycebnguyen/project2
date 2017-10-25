@@ -265,7 +265,7 @@ std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
   int result_cal = 0;
   
 	while ( todo.size() > 0 ) {
-		int index = find_max( todo );
+		int index = findMax( todo );
 		
 		if ( result_cal + todo[index]->kcal() <= total_kcal ) {
 			result.add_back ( todo[index] );
