@@ -194,7 +194,7 @@ std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
   // TODO: implement this function, then delete this comment
   // return nullptr;
   /*
-	// For these list of statements, only ONE of tthese should work.
+	// For these list of statements, only ONE of th	ese should work.
 	// to see which one, just go through ALL of them one by one and see which ones work. 
 	// std::FoodVector result;
 	// std::unique_ptr<FoodVector> result( new FoodVector );
