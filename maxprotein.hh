@@ -213,7 +213,7 @@ std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
 }
 
 
-// Custom helper function to find the food f in foods of maximum protein.
+//	Custom helper function to find the food f in foods of maximum protein.
 int find_max( const FoodVector& foods ) {
 	
 	int index = 0;
@@ -221,7 +221,7 @@ int find_max( const FoodVector& foods ) {
 	
 	for ( int i = 1; i < foods.size(); i++ ){
 		
-		if ( foods[i]->protein_g() > protein_max ) {
+		if ( foods[i]->protein_g() > maxProtein ) {
 			maxProtein = foods[i]->protein_g();
 			index = i;
 		}
