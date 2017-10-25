@@ -187,12 +187,14 @@ void print_food_vector(const FoodVector& foods) {
 // min_kcal kilocalories and at most max_kcal kilocalories. In
 // addition, the the vector includes only the first total_size foods
 // that match these criteria.
-std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
+
+ std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
 					       int min_kcal,
 					       int max_kcal,
 					       int total_size) {
   // TODO: implement this function, then delete this comment
   // return nullptr;
+  
   /*
 	// For these list of statements, only ONE of these should work.
 	// To see which one, just go through ALL of them one by one and see which ones work.
@@ -217,7 +219,10 @@ std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
 	return result;
 	
   */
+  
 }
+
+
 
 // Helper function we created to find the food f in foods of maximum protein.
 int findMax( const FoodVector& foods ) {
@@ -238,6 +243,7 @@ int findMax( const FoodVector& foods ) {
 	
 }
 
+
 // Compute the optimal set of foods with a greedy
 // algorithm. Specifically, among the food items that fit within a
 // total_kcal calorie budget, choose the food whose protein is
@@ -245,14 +251,19 @@ int findMax( const FoodVector& foods ) {
 // we've run out of foods, or run out of calories.
 std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
 					       int total_kcal) {
- std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
-					       int total_kcal) {
   // TODO: implement this function, then delete this comment
   // return nullptr;
   
   /*
   
-  // todo = foods
+  // create a vector todo, and then make todo = foods
+  // I think that
+  // FoodVector todo = foods;
+  // should work, simply because if you look at the parameter in the maxprotien_test.cpp code,
+  // auto soln = greedy_max_protein(trivial_foods, 99);
+  // trivial_foods is of type FoodVector. Again, I could be wrong, but that does seem like a reasonable solution.
+  // If you have a better idea, let me know.
+  
   // result = empty vector
   // For these list of statements, only ONE of these should work.
 	// To see which one, just go through ALL of them one by one and see which ones work.
@@ -262,20 +273,25 @@ std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
 	// std::unique_ptr<FoodVector> result( new FoodVector );
 	// std::FoodVector result;
 	// std::vector<std::shared_ptr<result>> FoodVector;
-  int result_cal = 0;
+	
+	
+	
+	
+	// I think the below vector declarations SHOULD work. Read the paragraphs above for my explanations as to why.
+	// std::unique_ptr<FoodVector> result( new FoodVector );
+	// FoodVector todo = foods;
+	int result_cal = 0;
   
 	while ( todo.size() > 0 ) {
-		int index = findMax( todo );
-		
+		int index = find_max( todo );
 		if ( result_cal + todo[index]->kcal() <= total_kcal ) {
 			result.add_back ( todo[index] );
 			result_cal = result_cal + todo[index]->kcal();
 		}
-		
 		// Delete todo[index];
 	}
 	
-  return result;
+	return result;
 	
   */
   
