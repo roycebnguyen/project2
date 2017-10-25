@@ -195,16 +195,13 @@ std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
   // return nullptr;
   /*
 	
-	std::unique_ptr<FoodVector> result(new FoodVector);
+	std::unique_ptr<FoodVector> result( new FoodVector );
 	int count = 0;
 	
-	// Iterate through every item in FoodVector
-	// If there exists a food item that has at least min_kcal kilocalories and at most max_kcal kilocalories, add it to the list.
+	for ( int i = 0; i < source.size() && count < total_size; i++ ) {
 	
-	for ( int i = 0; i < source.size() && count < total_size; i++){
-	
-		if ( source[i]->kcal() > 0 && source[i]->kcal() >= min_kcal && source[i]->kcal() <= max_kcal) {
-			result->push_back(source[i]);
+		if ( source[i]->kcal() > 0 && source[i]->kcal() >= min_kcal && source[i]->kcal() <= max_kcal ) {
+			result->push_back( source[i] );
 			count++;
 		}
 		
