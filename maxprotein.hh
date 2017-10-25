@@ -273,6 +273,7 @@ std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
 		}
 		
 		// Delete todo[index];
+		// This function won't work until you figure out how to delete todo[index];
 	}
 	
 	return result;
