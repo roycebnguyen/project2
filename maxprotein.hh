@@ -202,7 +202,7 @@ std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
 	
 	for ( int i = 0; i < total_size; i++){
 	
-		if (source[i]->kcal() >= min_kcal && source[i]->kcal() <= max_kcal) {
+		if ( source[i]->kcal() > 0 && source[i]->kcal() >= min_kcal && source[i]->kcal() <= max_kcal) {
 			result->push_back(source[i]);
 		}
 		
