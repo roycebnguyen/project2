@@ -196,12 +196,9 @@ void print_food_vector(const FoodVector& foods) {
   // return nullptr;
   
   /*
-	// For these list of statements, only ONE of these should work.
-	// To see which one, just go through ALL of them one by one and see which ones work.
-	// My guess is that it's the first one because the function type matches the vector type.
-	// Delete these comments when you find out which one it is.
-	
-	// std::unique_ptr<FoodVector> result( new FoodVector );
+	// Create an empty vector called result.
+	// I'm pretty sure the first coded one works, but try out all of them in case they don't.
+	std::unique_ptr<FoodVector> result( new FoodVector );
 	// std::FoodVector result;
 	// std::vector<std::shared_ptr<result>> FoodVector;
 	
@@ -255,38 +252,23 @@ std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
   // return nullptr;
   
   /*
-  
-  // create a vector todo, and then make todo = foods
-  // I think that
-  // FoodVector todo = foods;
-  // should work, simply because if you look at the parameter in the maxprotien_test.cpp code,
-  // auto soln = greedy_max_protein(trivial_foods, 99);
-  // trivial_foods is of type FoodVector. Again, I could be wrong, but that does seem like a reasonable solution.
-  // If you have a better idea, let me know.
-  
-  // result = empty vector
-  // For these list of statements, only ONE of these should work.
-	// To see which one, just go through ALL of them one by one and see which ones work.
-	// My guess is that it's the first one because the function type matches the vector type.
-	// Delete these comments when you find out which one it is.
+  	
+	// Create a vector todo, and then make todo = foods
+	FoodVector todo = foods;
 	
-	// std::unique_ptr<FoodVector> result( new FoodVector );
+	// Create an empty vector called result.
+	// I'm pretty sure the first coded one works, but try out all of them in case they don't.
+	std::unique_ptr<FoodVector> result( new FoodVector );
 	// std::FoodVector result;
 	// std::vector<std::shared_ptr<result>> FoodVector;
 	
-	
-	
-	
-	// I think the below vector declarations SHOULD work. Read the paragraphs above for my explanations as to why.
-	// FoodVector todo = foods;
-	// std::unique_ptr<FoodVector> result( new FoodVector );
 	int result_cal = 0;
   
 	while ( result_cal < total_kcal && todo.size() > 0  ) {
 		int index = find_max( todo );
 		
 		if ( result_cal + todo[index]->kcal() <= total_kcal ) {
-			result->push_back ( todo ( todo[index] ) );
+			result->push_back ( todo[index] );
 			result_cal = result_cal + todo[index]->kcal();
 		}
 		
