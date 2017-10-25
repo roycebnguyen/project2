@@ -18,6 +18,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+using namespace std;
+
+typedef std::vector<std::string> string_vector;
 
 // One food item in the USDA database.
 class Food {
@@ -191,20 +194,14 @@ void print_food_vector(const FoodVector& foods) {
  std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
 					       int min_kcal,
 					       int max_kcal,
-					       int total_size) {
-  // TODO: implement this function, then delete this comment
-  // return nullptr;
+					       int total_size) {  
   
-  /*
 	// Create an empty vector called result.
-	// I'm pretty sure the first coded one works, but try out all of them in case they don't.
 	std::unique_ptr<FoodVector> result( new FoodVector );
-	// std::FoodVector result;
-	// std::vector<std::shared_ptr<result>> FoodVector;
 	
 	int count = 0;
 	
-	for ( int i = 0; i < source.size() && count < total_size; i++ ) {
+	for ( int i = 0; i < (int)source.size() && count < total_size; i++ ) {
 	
 		if ( source[i]->kcal() > 0 && source[i]->kcal() >= min_kcal && source[i]->kcal() <= max_kcal ) {
 			result->push_back( source[i] );
@@ -215,8 +212,6 @@ void print_food_vector(const FoodVector& foods) {
 
 	return result;
 	
-  */
-  
 }
 
 
@@ -227,7 +222,7 @@ int findMax( const FoodVector& foods ) {
 	int index = 0;
 	int maxProtein = foods[0]->protein_g();
 	
-	for ( int i = 1; i < foods.size(); i++ ){
+	for ( int i = 1; i < (int)foods.size(); i++ ) {
 		
 		if ( foods[i]->protein_g() > maxProtein ) {
 			maxProtein = foods[i]->protein_g();
@@ -246,47 +241,44 @@ int findMax( const FoodVector& foods ) {
 // total_kcal calorie budget, choose the food whose protein is
 // greatest. Repeat until no more foods can be chosen, either because
 // we've run out of foods, or run out of calories.
+
 std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
 					       int total_kcal) {
-  // TODO: implement this function, then delete this comment
-  // return nullptr;
-  
-  /*
   	
 	// Create a vector todo, and then make todo = foods
 	FoodVector todo = foods;
 	
 	// Create an empty vector called result.
-	// I'm pretty sure the first coded one works, but try out all of them in case they don't.
 	std::unique_ptr<FoodVector> result( new FoodVector );
-	// std::FoodVector result;
-	// std::vector<std::shared_ptr<result>> FoodVector;
 	
 	int result_cal = 0;
+	int index;
   
-	while ( result_cal < total_kcal && todo.size() > 0  ) {
-		int index = find_max( todo );
+	while ( result_cal <= total_kcal && !todo.empty() ) {
+		 index = findMax( todo );
 		
 		if ( result_cal + todo[index]->kcal() <= total_kcal ) {
 			result->push_back ( todo[index] );
 			result_cal = result_cal + todo[index]->kcal();
 		}
 		
+		todo.erase ( todo.begin() + index );
 		// Delete todo[index];
 		// This function won't work until you figure out how to delete todo[index];
 	}
 	
 	return result;
-	
-  */
-  
+
 }
+
 
 // Compute the optimal set of foods with an exhaustive search
 // algorithm. Specifically, among all subsets of foods, return the
 // subset whose calories fit within the total_kcal budget, and whose
 // total protein is greatest. To avoid overflow, the size of the foods
 // vector must be less than 64.
+
+
 std::unique_ptr<FoodVector> exhaustive_max_protein(const FoodVector& foods,
 						   int total_kcal) {
   const int n = foods.size();
