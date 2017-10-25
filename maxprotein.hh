@@ -194,8 +194,11 @@ std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
   // TODO: implement this function, then delete this comment
   // return nullptr;
   /*
-	
-	std::unique_ptr<FoodVector> result( new FoodVector );
+	// For these list of statements, only ONE of tthese should work.
+	// to see which one, just go through ALL of them one by one and see which ones work. 
+	// std::FoodVector result;
+	// std::unique_ptr<FoodVector> result( new FoodVector );
+	// std::vector<std::shared_ptr<result>> FoodVector;
 	int count = 0;
 	
 	for ( int i = 0; i < source.size() && count < total_size; i++ ) {
