@@ -278,16 +278,18 @@ std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
 	
 	
 	// I think the below vector declarations SHOULD work. Read the paragraphs above for my explanations as to why.
-	// std::unique_ptr<FoodVector> result( new FoodVector );
 	// FoodVector todo = foods;
+	// std::unique_ptr<FoodVector> result( new FoodVector );
 	int result_cal = 0;
   
-	while ( todo.size() > 0 ) {
+	while ( result_cal < total_kcal && todo.size() > 0  ) {
 		int index = find_max( todo );
+		
 		if ( result_cal + todo[index]->kcal() <= total_kcal ) {
-			result.add_back ( todo[index] );
+			result->push_back ( todo ( todo[index] ) );
 			result_cal = result_cal + todo[index]->kcal();
 		}
+		
 		// Delete todo[index];
 	}
 	
