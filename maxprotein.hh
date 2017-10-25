@@ -1,288 +1,133 @@
 ///////////////////////////////////////////////////////////////////////////////
-// maxprotein.hh
+// maxprotein_test.cc
 //
-// Compute the set of foods that maximizes protein, within a calorie budget,
-// with the greedy method or exhaustive search.
+// Unit tests for maxprotein.hh
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#pragma once
-
 #include <cassert>
-#include <cmath>
-#include <fstream>
-#include <iostream>
-#include <memory>
-#include <queue>
 #include <sstream>
-#include <string>
-#include <vector>
-using namespace std;
 
-typedef std::vector<std::string> string_vector;
+#include "maxprotein.hh"
+#include "rubrictest.hh"
 
-// One food item in the USDA database.
-class Food {
-private:
-  // Human-readable description of the food, e.g. "all-purpose wheat
-  // flour". Must be non-empty.
-  std::string _description;
+int main() {
+  Rubric rubric;
 
-  // Human-readable description of the amount of the food in one
-  // sample, e.g. "1 cup". Must be non-empty.
-  std::string _amount;
-
-  // Number of grams in one sample; must be non-negative.
-  int _amount_g;
-
-  // Energy, in units of kilocalories (commonly called "calories"), in
-  // one sample; must be non-negative.
-  int _kcal;
-
-  // Number of grams of protein in one sample; most be non-negative.
-  int _protein_g;
-
-public:
-  Food(const std::string& description,
-       const std::string& amount,
-       int amount_g,
-       int kcal,
-       int protein_g)
-    : _description(description),
-      _amount(amount),
-      _amount_g(amount_g),
-      _kcal(kcal),
-      _protein_g(protein_g) {
-
-    assert(!description.empty());
-    assert(!amount.empty());
-    assert(amount_g >= 0);
-    assert(kcal >= 0);
-    assert(protein_g >= 0);
-  }
-
-  const std::string& description() const { return _description; }
-  const std::string& amount() const { return _amount; }
-  int amount_g() const { return _amount_g; }
-  int kcal() const { return _kcal; }
-  int protein_g() const { return _protein_g; }
-
-};
-
-// Alias for a vector of shared pointers to Food objects.
-typedef std::vector<std::shared_ptr<Food>> FoodVector;
-
-// Load all the valid foods from a USDA database in their ABBREV
-// format. Foods that are missing fields such as the amount string are
-// skipped. Returns nullptr on I/O error.
-std::unique_ptr<FoodVector> load_usda_abbrev(const std::string& path) {
-
-  std::unique_ptr<FoodVector> failure(nullptr);
+  FoodVector trivial_foods;
+  trivial_foods.push_back(std::shared_ptr<Food>(new Food("banana", "1 each", 20, 100, 1)));
+  trivial_foods.push_back(std::shared_ptr<Food>(new Food("hotdog", "1 piece", 25, 150, 5)));
   
-  std::ifstream f(path);
-  if (!f) {
-    return failure;
-  }
+  auto all_foods = load_usda_abbrev("ABBREV.txt");
+  assert( all_foods );
 
-  std::unique_ptr<FoodVector> result(new FoodVector);
-
-  for (std::string line; std::getline(f, line); ) {
-
-    std::vector<std::string> fields;
-    std::stringstream ss(line);
-    for (std::string field; std::getline(ss, field, '^'); ) {
-      fields.push_back(field);
-    }
-
-    if (fields.size() != 53) {
-      return failure;
-    }
-    
-    std::string descr_field = fields[1],
-                kcal_field = fields[3],
-                protein_g_field = fields[4],
-                amount_g_field = fields[48],
-                amount_field = fields[49];
-
-    auto remove_tildes = [](std::string& output,
-			    const std::string& field) {
-      if ((field.size() < 3) ||
-	  (field.front() != '~') ||
-	  (field.back() != '~')) {
-	return false;
-      } else {
-	output.assign(field.begin() + 1, field.end() - 1);
-	return true;
-      }
-    };
-
-    auto parse_mil = [](int& output, const std::string& field) {
-      std::stringstream ss(field);
-      double floating;
-      ss >> floating;
-      if ( ! ss ) {
-	return false;
-      } else {
-	output = lround(floating);
-	return true;
-      }
-    };
-
-    std::string description, amount;
-    int amount_g, kcal, protein_g;
-    if ( remove_tildes(description, descr_field) &&
-	 remove_tildes(amount, amount_field) &&
-	 parse_mil(amount_g, amount_g_field) &&
-	 parse_mil(kcal, kcal_field) &&
-	 parse_mil(protein_g, protein_g_field) ) {
-      result->push_back(std::shared_ptr<Food>(new Food(description,
-						       amount,
-						       amount_g,
-						       kcal,
-						       protein_g)));
-    }
-  }
-
-  f.close();
-
-  return result;
-}
-
-// Convenience function to compute the total kilocalories and protein
-// in a FoodVector. Those values are returned through the
-// first two pass-by-reference arguments.
-void sum_food_vector(int& total_kcal,
-		     int& total_protein_g,
-		     const FoodVector& foods) {
-  total_kcal = total_protein_g = 0;
-  for (auto& food : foods) {
-    total_kcal += food->kcal();
-    total_protein_g += food->protein_g();
-  }
-}
-
-// Convenience function to print out each food in a FoodVector,
-// followed by the total kilocalories and protein in it.
-void print_food_vector(const FoodVector& foods) {
-  for (auto& food : foods) {
-    std::cout << food->description()
-	      << " (100 g where each " << food->amount()
-	      << " is " << food->amount_g() << " g)"
-	      << " kcal=" << food->kcal()
-	      << " protein=" << food->protein_g() << " g"
-	      << std::endl;
-  }
+  auto filtered_foods = filter_food_vector(*all_foods, 1, 2500, all_foods->size());
   
-  int total_kcal, total_protein_g;
-  sum_food_vector(total_kcal, total_protein_g, foods);
-  std::cout << "total kcal=" << total_kcal
-	    << " total_protein=" << total_protein_g << " g"
-	    << std::endl;
-}
-
-// Filter the vector source, i.e. create and return a new FoodVector
-// containing the subset of the foods in source that match given
-// criteria. This is intended to 1) filter out foods with zero
-// calories that are irrelevant to our optimization, and 2) limit the
-// size of inputs to the exhaustive search algorithm since it will
-// probably be slow. Each food that is included must have at least
-// min_kcal kilocalories and at most max_kcal kilocalories. In
-// addition, the the vector includes only the first total_size foods
-// that match these criteria.
-
- std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
-					       int min_kcal,
-					       int max_kcal,
-					       int total_size) {  
+  rubric.criterion("load_usda_abbrev still works", 2,
+		   [&]() {
+		     TEST_TRUE("non-null", all_foods);
+		     TEST_EQUAL("size", 8490, all_foods->size());
+		   });
   
-	// Create an empty vector called result.
-	std::unique_ptr<FoodVector> result( new FoodVector );
-	
-	int count = 0;
-	
-	for ( int i = 0; i < (int)source.size() && count < total_size; i++ ) {
-	
-		if ( source[i]->kcal() > 0 && source[i]->kcal() >= min_kcal && source[i]->kcal() <= max_kcal ) {
-			result->push_back( source[i] );
-			count++;
-		}
-		
-	}
+  rubric.criterion("filter_food_vector", 2,
+		   [&]() {
+		     auto three = filter_food_vector(*all_foods, 1, 2000, 3),
+		       ten = filter_food_vector(*all_foods, 1, 2000, 10);
+		     TEST_TRUE("non-null", three);
+		     TEST_TRUE("non-null", ten);
+		     TEST_EQUAL("total_size", 3, three->size());
+		     TEST_EQUAL("total_size", 10, ten->size());
+		     TEST_EQUAL("contents", "BUTTER,WITH SALT", (*ten)[0]->description());
+		     TEST_EQUAL("contents", "CHEESE,CHESHIRE", (*ten)[9]->description());
+		     for (int i = 0; i < 3; i++) {
+		       TEST_EQUAL("contents", (*three)[i]->description(), (*ten)[i]->description());
+		     }
+		   });
 
-	return result;
-	
-}
+  rubric.criterion("greedy_max_protein trivial cases", 2,
+		   [&]() {
+		     auto soln = greedy_max_protein(trivial_foods, 99);
+		     TEST_TRUE("non-null", soln);
+		     TEST_TRUE("empty solution", soln->empty());
 
+		     soln = greedy_max_protein(trivial_foods, 100);
+		     TEST_TRUE("non-null", soln);
+		     TEST_EQUAL("banana only", 1, soln->size());
+		     TEST_EQUAL("banana only", "banana", (*soln)[0]->description());
 
+		     soln = greedy_max_protein(trivial_foods, 150);
+		     TEST_TRUE("non-null", soln);
+		     TEST_EQUAL("hotdog only", 1, soln->size());
+		     TEST_EQUAL("hotdog only", "hotdog", (*soln)[0]->description());
 
-// Helper function we created to find the food f in foods of maximum protein.
-int findMax( const FoodVector& foods ) {
-	
-	int index = 0;
-	int maxProtein = foods[0]->protein_g();
-	
-	for ( int i = 1; i < (int)foods.size(); i++ ) {
-		
-		if ( foods[i]->protein_g() > maxProtein ) {
-			maxProtein = foods[i]->protein_g();
-			index = i;
-		}
-		
-	}
-	
-	return index;
-	
-}
-
-
-// Compute the optimal set of foods with a greedy
-// algorithm. Specifically, among the food items that fit within a
-// total_kcal calorie budget, choose the food whose protein is
-// greatest. Repeat until no more foods can be chosen, either because
-// we've run out of foods, or run out of calories.
-
-std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
-					       int total_kcal) {
-  	
-	// Create a vector todo, and then make todo = foods
-	FoodVector todo = foods;
-	
-	// Create an empty vector called result.
-	std::unique_ptr<FoodVector> result( new FoodVector );
-	
-	int result_cal = 0;
-	int index;
+		     soln = greedy_max_protein(trivial_foods, 250);
+		     TEST_TRUE("non-null", soln);
+		     TEST_EQUAL("hotdog and banana", 2, soln->size());
+		   });
   
-	while ( result_cal <= total_kcal && !todo.empty() ) {
-		 index = findMax( todo );
-		
-		if ( result_cal + todo[index]->kcal() <= total_kcal ) {
-			result->push_back ( todo[index] );
-			result_cal = result_cal + todo[index]->kcal();
-		}
-		
-		todo.erase ( todo.begin() + index );
-		// Delete todo[index];
-		// This function won't work until you figure out how to delete todo[index];
-	}
-	
-	return result;
+  rubric.criterion("greedy_max_protein correctness", 4,
+		   [&]() {
+		     auto soln2000 = greedy_max_protein(*filtered_foods, 2000),
+		       soln2500 = greedy_max_protein(*filtered_foods, 2500);
 
-}
+		     TEST_TRUE("non-null", soln2000);
+		     TEST_TRUE("non-null", soln2500);
 
+		     TEST_FALSE("non-empty", soln2000->empty());
+		     TEST_FALSE("non-empty", soln2500->empty());
 
-// Compute the optimal set of foods with an exhaustive search
-// algorithm. Specifically, among all subsets of foods, return the
-// subset whose calories fit within the total_kcal budget, and whose
-// total protein is greatest. To avoid overflow, the size of the foods
-// vector must be less than 64.
+		     int kcal2000, protein2000, kcal2500, protein2500;
+		     sum_food_vector(kcal2000, protein2000, *soln2000);
+		     sum_food_vector(kcal2500, protein2500, *soln2500);
+		     TEST_EQUAL("2000 kcal solution", 476, protein2000);
+		     TEST_EQUAL("2500 kcal solution", 595, protein2500);
+		   });
 
+  rubric.criterion("exhaustive_max_protein trivial cases", 2,
+		   [&]() {
+		     auto soln = exhaustive_max_protein(trivial_foods, 99);
+		     TEST_TRUE("non-null", soln);
+		     TEST_TRUE("empty solution", soln->empty());
 
-std::unique_ptr<FoodVector> exhaustive_max_protein(const FoodVector& foods,
-						   int total_kcal) {
-  const int n = foods.size();
-  assert(n < 64);
-  // TODO: implement this function, then delete this comment
-  return nullptr;
+		     soln = exhaustive_max_protein(trivial_foods, 100);
+		     TEST_TRUE("non-null", soln);
+		     TEST_EQUAL("banana only", 1, soln->size());
+		     TEST_EQUAL("banana only", "banana", (*soln)[0]->description());
+
+		     soln = exhaustive_max_protein(trivial_foods, 150);
+		     TEST_TRUE("non-null", soln);
+		     TEST_EQUAL("hotdog only", 1, soln->size());
+		     TEST_EQUAL("hotdog only", "hotdog", (*soln)[0]->description());
+
+		     soln = exhaustive_max_protein(trivial_foods, 250);
+		     TEST_TRUE("non-null", soln);
+		     TEST_EQUAL("hotdog and banana", 2, soln->size());
+		   });
+  
+  rubric.criterion("exhaustive_max_protein correctness", 4,
+		   [&]() {
+
+		     std::vector<int> optimal_protein_totals = {
+		       1, 1, 22, 45, 66, 85, 110, 113, 115, 118, 127, 135, 136,
+		       141, 149, 149, 151,
+		     };
+		     
+		     for (int n = 2; n <= 18; n++) {
+		       int expected_protein = optimal_protein_totals[n-2];
+		       auto small_foods = filter_food_vector(*filtered_foods, 1, 2000, n);
+		       TEST_TRUE("non-null", small_foods);
+		       auto solution = exhaustive_max_protein(*small_foods, 2000);
+		       TEST_TRUE("non-null", solution);
+		       int actual_kcal, actual_protein;
+		       sum_food_vector(actual_kcal, actual_protein, *solution);
+		       std::stringstream ss;
+		       ss << "exhaustive search n=" << n
+			  << ", expected protein=" << expected_protein
+			  << " but algorithm found=" << actual_protein;
+		       TEST_EQUAL(ss.str(), expected_protein, actual_protein);
+		     }
+		   });
+
+  return rubric.run();
 }
