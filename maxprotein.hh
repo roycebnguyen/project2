@@ -212,6 +212,26 @@ std::unique_ptr<FoodVector> filter_food_vector(const FoodVector& source,
   */
 }
 
+
+// Custom helper function to find the food f in foods of maximum protein.
+int find_max( const FoodVector& foods ) {
+	
+	int index = 0;
+	int maxProtein = foods[0]->protein_g();
+	
+	for ( int i = 1; i < foods.size(); i++ ){
+		
+		if ( foods[i]->protein_g() > protein_max ) {
+			maxProtein = foods[i]->protein_g();
+			index = i;
+		}
+		
+	}
+	
+	return index;
+	
+}
+
 // Compute the optimal set of foods with a greedy
 // algorithm. Specifically, among the food items that fit within a
 // total_kcal calorie budget, choose the food whose protein is
