@@ -245,8 +245,40 @@ int findMax( const FoodVector& foods ) {
 // we've run out of foods, or run out of calories.
 std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
 					       int total_kcal) {
+ std::unique_ptr<FoodVector> greedy_max_protein(const FoodVector& foods,
+					       int total_kcal) {
   // TODO: implement this function, then delete this comment
-  return nullptr;
+  // return nullptr;
+  
+  /*
+  
+  // todo = foods
+  // result = empty vector
+  // For these list of statements, only ONE of these should work.
+	// To see which one, just go through ALL of them one by one and see which ones work.
+	// My guess is that it's the first one because the function type matches the vector type.
+	// Delete these comments when you find out which one it is.
+	
+	// std::unique_ptr<FoodVector> result( new FoodVector );
+	// std::FoodVector result;
+	// std::vector<std::shared_ptr<result>> FoodVector;
+  int result_cal = 0;
+  
+	while ( todo.size() > 0 ) {
+		int index = find_max( todo );
+		
+		if ( result_cal + todo[index]->kcal() <= total_kcal ) {
+			result.add_back ( todo[index] );
+			result_cal = result_cal + todo[index]->kcal();
+		}
+		
+		// Delete todo[index];
+	}
+	
+  return result;
+	
+  */
+  
 }
 
 // Compute the optimal set of foods with an exhaustive search
